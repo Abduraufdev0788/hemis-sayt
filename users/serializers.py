@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Parents
+from .models import Children, Parents
 
 class ParentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -14,3 +14,36 @@ class ParentSerializer(serializers.ModelSerializer):
             phone_number=validated_data['phone_number']
         )
         return parent
+    
+
+class ChildrenSerializer(serializers.ModelSerializer):
+    parent_phone = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = Children
+        fields = [
+            'first_name',
+            'last_name',
+            'email',
+            'username',
+            'password',
+            'parent_phone'
+        ]
+
+    def create(self, validated_data):
+        parent_phone = validated_data.pop('parent_phone')
+
+        try:
+            parent = Parents.objects.get(phone_number=parent_phone)
+        except Parents.DoesNotExist:
+            raise serializers.ValidationError({
+                "parent_phone": "Bunday parent topilmadi"
+            })
+
+
+        from django.contrib.auth.hashers import make_password
+        validated_data['password'] = make_password(validated_data['password'])
+
+        child = Children.objects.create(parent=parent, **validated_data)
+
+        return child
