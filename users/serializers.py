@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Children, Parents
+from django.contrib.auth.hashers import check_password
 
 class ParentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -47,3 +48,23 @@ class ChildrenSerializer(serializers.ModelSerializer):
         child = Children.objects.create(parent=parent, **validated_data)
 
         return child
+    
+
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
+
+    def validate(self, data):
+        username = data.get("username")
+        password = data.get("password")
+
+        try:
+            user = Children.objects.get(username=username)
+        except Children.DoesNotExist:
+            raise serializers.ValidationError("User topilmadi")
+
+        if not check_password(password, user.password):
+            raise serializers.ValidationError("Parol noto‘g‘ri")
+
+        data['user'] = user
+        return data

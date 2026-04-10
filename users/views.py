@@ -1,7 +1,9 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import ChildrenSerializer, ParentSerializer
+from .serializers import ChildrenSerializer, LoginSerializer, ParentSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import IsAuthenticated
 
 class ParentCreateView(APIView):
     def post(self, request):
@@ -34,3 +36,39 @@ class ChildrenRegisterView(APIView):
             }, status=201)
 
         return Response(serializer.errors, status=400)
+    
+class ChildrenLoginView(APIView):
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data)
+
+        if serializer.is_valid():
+            user = serializer.validated_data['user']
+
+            refresh = RefreshToken.for_user(user)
+
+            return Response({
+                "access": str(refresh.access_token),
+                "refresh": str(refresh)
+            })
+
+        return Response(serializer.errors, status=400)
+
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            refresh_token = request.data.get("refresh")
+
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+
+            return Response({
+                "success": True,
+                "message": "Muvaffaqiyatli logout qilindi"
+            })
+
+        except Exception as e:
+            return Response({
+                "error": "Token noto'g'ri yoki eskirgan"
+            }, status=status.HTTP_400_BAD_REQUEST)
