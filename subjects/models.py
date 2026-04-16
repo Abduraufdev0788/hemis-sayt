@@ -12,7 +12,7 @@ class Subject(models.Model):
 class Teacher(models.Model):
     subject = models.ForeignKey("subjects.Subject", related_name="teachers", on_delete=models.CASCADE)
     user = models.OneToOneField(AUTH_USER_MODEL, on_delete=models.CASCADE) 
-    groups = models.ManyToManyField(Group, related_name="teachers",  null=True, blank=True)
+    groups = models.ManyToManyField(Group, related_name="teachers", blank=True)
 
 
     def __str__(self):
