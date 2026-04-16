@@ -146,6 +146,9 @@ AUTH_USER_MODEL = 'users.Children'
 
 CORS_ALLOW_ALL_ORIGINS = True
 
+STATIC_URL = '/static/'
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
 BOT_TOKEN = os.getenv('BOT_TOKEN')  # Telegram bot token from environment variable
 
 REST_FRAMEWORK = {
