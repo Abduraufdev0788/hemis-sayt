@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from groups.models import Group
+
 
 class Parents(models.Model):
     telegram_id = models.BigIntegerField(unique=True)
@@ -12,6 +12,7 @@ class Parents(models.Model):
     def __str__(self):
         return f"{self.name} ({self.telegram_id})"
 
+
 class Children(AbstractUser):
     ROLE_CHOICES = (
         ('student', 'Student'),
@@ -19,16 +20,20 @@ class Children(AbstractUser):
         ('parent', 'Parent'),
         ('admin', 'Admin'),
     )
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='student')
-    parent = models.ForeignKey(Parents,null=True, blank=True, on_delete=models.CASCADE, related_name='children')
-    group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True, blank=True)
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
-    email = models.EmailField(blank=True, null=True)
-    username = models.CharField(max_length=255 , unique=True)
-    password = models.CharField(max_length=255)
 
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='student')
+    parent = models.ForeignKey(Parents, null=True, blank=True, on_delete=models.CASCADE, related_name='children')
+    group = models.ForeignKey(
+    "groups.Group",
+    on_delete=models.CASCADE,
+    null=True,
+    blank=True
+    )
+    total_absent_hours = models.IntegerField(default=0)
+
+    class Meta:
+        verbose_name = "Child"
+        verbose_name_plural = "Children"
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
-    

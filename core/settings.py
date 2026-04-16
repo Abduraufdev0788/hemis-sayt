@@ -44,11 +44,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
 
+    'corsheaders',
+
 
     'users.apps.UsersConfig',
     'groups.apps.GroupsConfig',
     'subjects.apps.SubjectsConfig',
     'attendance.apps.AttendanceConfig',
+    'teachers.apps.TeachersConfig',
 
 
 
@@ -58,6 +61,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -140,6 +144,9 @@ STATIC_URL = 'static/'
 
 AUTH_USER_MODEL = 'users.Children'
 
+CORS_ALLOW_ALL_ORIGINS = True
+
+BOT_TOKEN = os.getenv('BOT_TOKEN')  # Telegram bot token from environment variable
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (

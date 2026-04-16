@@ -48,7 +48,8 @@ class ChildrenLoginView(APIView):
 
             return Response({
                 "access": str(refresh.access_token),
-                "refresh": str(refresh)
+                "refresh": str(refresh),
+                "role": user.role
             })
 
         return Response(serializer.errors, status=400)
@@ -72,3 +73,17 @@ class LogoutView(APIView):
             return Response({
                 "error": "Token noto'g'ri yoki eskirgan"
             }, status=status.HTTP_400_BAD_REQUEST)
+        
+class ProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+
+        return Response({
+            "username": user.username,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "group": user.group.name if user.group else None,
+            "role": user.role
+        })
