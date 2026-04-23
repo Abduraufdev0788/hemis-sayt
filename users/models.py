@@ -36,4 +36,4 @@ class Children(AbstractUser):
         verbose_name_plural = "Children"
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name}"
+        return f"{self.username} {self.last_name}"
